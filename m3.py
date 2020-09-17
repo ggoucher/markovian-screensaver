@@ -7,29 +7,28 @@ from turtle import *
 import random
 
 # General parameters
-travelingPoints = []  # these are the points that the turtle can travel to, we'll generate values for this
+traveling_points = []  # these are the points that the turtle can travel to, we'll generate values for this
+init_points = []  # this is the s_o array, so we can generate the state to start from.
 m_states = 200  # this variable stores the number of possible states for our markov chain.
 shape_count = 49
-initPoints = []
 
 colors = [(55, 63, 81), (139, 139, 174), (83, 122, 90), (156, 129, 217)]  # generate from coolors.co,
 # (charcoal, cool grey, amazon, medium purple
 bg_color = (250, 242, 219)  # cornsilk, from coolors.co
 
-# Markov Matrices
-movementMarkovs = []  # storage variable that will allow us to store the markov matrix for moving the turtle
-colorMarkovs = []  # storage variable that will allow us to store the markov matrix for our colors utilized
+# Markov Matrix
+movement_markovs = []  # storage variable that will allow us to store the markov matrix for moving the turtle
 
 
 def get_points(ptnum):
-    """(int)-> null. This function intakes the number of travelingPoints that we desire, and then utilizes the random
+    """(int)-> null. This function intakes the number of traveling_points that we desire, and then utilizes the random
     module in order to determine the points we will use for the turtle to travel to."""
 
     low_lim = -300
     up_lim = 300
 
     for x in range(ptnum):
-        travelingPoints.append([random.randint(low_lim, up_lim), random.randint(low_lim, up_lim)])
+        traveling_points.append([random.randint(low_lim, up_lim), random.randint(low_lim, up_lim)])
 
 
 def init_states():
@@ -38,29 +37,27 @@ def init_states():
 
     equal_pr = 1/m_states
     for i in range(m_states):
-        initPoints.append(equal_pr)
+        init_points.append(equal_pr)
 
 
 def get_movement_markovs():
-    """()-> null. This function takes our travelingPoints matrix, and then uses its length in order to determine
+    """()-> null. This function takes our traveling_points matrix, and then uses its length in order to determine
     the size of the mxm Markov matrix. From here, we use the random module to create random terms 1 -> 100, sum and
     divide them, then add to the resultant array to our movementMarkov matrix."""
 
-    pts_len = len(travelingPoints)  # lets us know how many rows we have to generate
-
-    for x in range(pts_len):  # creates our MxM markov matrix
+    for x in range(m_states):  # creates our MxM markov matrix
         row_vals = []  # used as a temporary placeholder array for randomly generated values 1 -> 100.
         row_probs = []  # contains all of the state transition probability values for the mi term
         upper_lim = 100
 
-        for y in range(pts_len):  # for loop creating our randomly generated values
+        for y in range(m_states):  # for loop creating our randomly generated values
             stored_val = random.uniform(1, upper_lim)
             row_vals.append(stored_val)
 
         sum_vals = sum(row_vals)  # used for dividing each term  in the row_vals array
         for z in row_vals:  # for loop adding values to the row_probs array, which will sum to 1.
             row_probs.append(z / sum_vals)
-        movementMarkovs.append(row_probs)
+        movement_markovs.append(row_probs)
 
 
 def initial_turtle_movement():
@@ -88,7 +85,7 @@ def create_rect(loc1, loc2):
     penup()
 
 
-def creation_loop(s_start):
+def creation_loop(s_start, s_index):
     """(arr)->none. This function serves as a looper to create rectangles and assign new positions to goto using
     the random python module. """
 
@@ -97,10 +94,13 @@ def creation_loop(s_start):
     while count <= shape_count:
         if count % 10 == 0:  # so that the screen doesn't get too busy
             clear()
-        s_next = random.choices(travelingPoints, initPoints, k=1)  # the next point we will use to illustrate
+        s_next = random.choices(traveling_points, movement_markovs[s_index], k=1)  # the next point we will use to
+        # illustrate
         create_rect(s_start, s_next[0])
 
-        s_start = random.choices(travelingPoints, initPoints, k=1)[0]  # giving us a new point to create a shape from
+        s_start = random.choices(traveling_points, init_points, k=1)[0]  # giving us a new point to create a shape from
+        s_index = traveling_points.index(s_start)
+
         goto(s_start[0], s_start[1])
         count += 1
 
@@ -111,12 +111,14 @@ def main_turtle():
 
     initial_turtle_movement()
 
-    s_o = random.choices(travelingPoints, initPoints, k=1)  # finding the S_o point we're going to start from
+    s_o = random.choices(traveling_points, init_points, k=1)  # finding the S_o point we're going to start from
+    s_index = traveling_points.index(s_o[0])  # so we know which row in the markov_matrix to go to
+
     penup()
     goto(s_o[0][0], s_o[0][1])
 
     s_start = [s_o[0][0], s_o[0][1]]  # the inital point to draw a rectangle from, reassigned in the creation loop
-    creation_loop(s_start)
+    creation_loop(s_start, s_index)
 
     done()
 
