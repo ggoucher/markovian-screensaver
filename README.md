@@ -1,4 +1,4 @@
-<h1>A Markovian Screensaver</h1>
+<h1>The Goucher/Mondrian Markovian Screensaver</h1>
 <h3>A project by Gerard Goucher 🧚</h3>
 
 This project uses turtle to create a "screen saver" style form of visual art, drawing on 
@@ -48,10 +48,14 @@ each "screen saver" outputted is unique, and visually coherent. Beyond this, I u
 the points on the coordinate plane that we could travel to, as well.
 
 Once all my probabilities and points were generated, I worked on figuring out the best
-way to probabilitiscally choose the next points to transition to. This is where I toyed with the Random
+way to probabilistically choose the next points to transition to. This is where I toyed with the Random
  module again, using the ```random.choices()``` method to apply my generated probabilities to my possible transition
  points. By doing a bit of conceptual work up front, the rest of the code was pretty simple
 to put together in terms of graphical work. 
+
+Going forward, I think that a meaningful challenge (albeit, very challenging) would be for 
+me to train a machine learning model on a real life Markov process, which would allow me to 
+synthesize my new skills with data analytics.
 
 <h2>Creativity</h2>
 
